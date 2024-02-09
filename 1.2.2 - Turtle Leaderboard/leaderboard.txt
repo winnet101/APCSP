@@ -1,3 +1,5 @@
-James,45 
-Winter,34 
-asdf,10 
+Warren,11
+James,9
+highScorer,6
+newScore,6
+Julia,6

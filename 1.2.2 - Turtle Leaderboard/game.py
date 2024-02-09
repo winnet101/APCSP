@@ -8,7 +8,7 @@ font = ("Arial", 20, "normal")
 spotSize = 2
 spotColor = 'pink'
 spotShape = 'turtle'
-timer = 1
+timer = 5
 counterInterval = 1000 # 1 second
 timerUp = False
 score = 0
@@ -44,7 +44,6 @@ def manageLeaderboard():
   if (len(leaderScoresList) < 5 or score >= leaderScoresList[4]):
     lb.update_leaderboard(leaderboardFileName, leaderNamesList, leaderScoresList, playerName, score)
     lb.draw_leaderboard(True, leaderNamesList, leaderScoresList, spot, score)
-
   else:
     lb.draw_leaderboard(False, leaderNamesList, leaderScoresList, spot, score)
 

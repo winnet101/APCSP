@@ -56,32 +56,27 @@ def get_scores(file_name):
 # update leaderboard by inserting the current player and score to the list at the correct position
 def update_leaderboard(file_name, leader_names, leader_scores,  player_name, player_score):
 
-  index = 0
-  # TODO 8: loop through all the scores in the existing leaderboard list
-  '''
-  for   :
-    # TODO 9: check if this is the position to insert new score at
-    if ():
+  i = 0
+  for i in range(len(leader_scores)):
+    if (player_score >= leader_scores[i]):
       break
     else:
-      index = index + 1
-  '''
+      i = i + 1
   
-  # TODO 10: insert new player and score
+  leader_names.insert(i, player_name)
+  leader_scores.insert(i, player_score)
 
   # TODO 11: keep both lists at 5 elements only (top 5 players)
+  if (len(leader_scores)) > 5:
+    leader_names.pop()
+    leader_scores.pop()
   
-  # TODO 12: store the latest leaderboard back in the file
-  
-  '''
   leaderboard_file = open(file_name, "w")  # this mode opens the file and erases its contents for a fresh start
  
-  # TODO 13 loop through all the leaderboard elements and write them to the the file
-  for:
-    leaderboard_file.write(leader_names[index] + "," + str(leader_scores[index]) + "\n")
+  for i in range(len(leader_names)):
+    leaderboard_file.write(leader_names[i] + "," + str(leader_scores[i]) + "\n")
 
   leaderboard_file.close()
-  '''
   
 
 # draw leaderboard and display a message to player
@@ -107,11 +102,11 @@ def draw_leaderboard(high_scorer, leader_names, leader_scores, turtle_object, pl
   turtle_object.goto(-160,int(turtle_object.ycor())-50)
   turtle_object.pendown()
 
-  # TODO 14: display message about player making/not making leaderboard
-  '''
+  if high_scorer:
     turtle_object.write("Congratulations!\nYou made the leaderboard!", font=font_setup)
+  else:
     turtle_object.write("Sorry!\nYou didn't make the leaderboard.\nMaybe next time!", font=font_setup)
-  '''
+
 
   # move turtle to a new line
   turtle_object.penup()
