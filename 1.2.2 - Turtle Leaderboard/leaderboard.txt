@@ -1,5 +1,5 @@
-Warren,11
-James,9
-highScorer,6
-newScore,6
-Julia,6
+Karin,31
+Chris,30
+Jordan,28
+Christine,23
+Josiah,18
