@@ -1,4 +1,5 @@
 #   a123_apple_1.py
+import random as rand
 import turtle as trtl
 
 #-----setup-----
@@ -20,21 +21,31 @@ def draw_apple(active_apple):
   active_apple.shape(apple_image)
   wn.update()
 
-def apple_fall():
-  apple.sety(-200)
+def repos_apple(active_apple):
+  trtl.tracer(False)
+  active_apple.goto(rand.randint(-180, 180), 0)
 
-def write_letter():
-  x = apple.xcor()
-  y = apple.ycor()
-  apple.goto(x - 18, y + 40)
-  apple.write("A", font
+def apple_fall():
+  trtl.tracer(True)
+  apple.clear()
+  apple.sety(-200)
+  apple.hideturtle()
+
+def write_letter(active_apple:trtl.Turtle, letter: str):
+  ''' Doc comments '''
+  trtl.tracer(False)
+  x = active_apple.xcor()
+  y = active_apple.ycor()
+  active_apple.goto(x - 18, y + 40)
+  active_apple.write(letter.upper(), font
   =("Arial", 55, "normal"))
-  apple.goto(x, y)
+  active_apple.goto(x, y)
+  active_apple.showturtle()
   wn.update()
 
 #-----function calls-----
 draw_apple(apple)
-write_letter()
+write_letter(apple, "A")
 wn.onkeypress(apple_fall, "a")
 
 wn.listen()
