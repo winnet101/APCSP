@@ -17,25 +17,33 @@ trtl.tracer(False)
 
 letters = ["q", "w", "e", "r", "t", "y", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m"]
 
+letter_list:list[str] = []
+turtle_list:list[trtl.Turtle] = []
+
 #-----functions-----
-# given a turtle, set that turtle to be shaped by the image file
-def draw_apple(active_apple):
-  active_apple.shape(apple_image)
+def draw_apple(active: trtl.Turtle):
+  active.shape(apple_image)
+  write_letter(active, curr_letter.capitalize())
   wn.update()
 
 def reset_apple(active_apple):
   trtl.tracer(False)
   active_apple.goto(rand.randint(-180, 180), 0)
 
-def apple_fall(active_apple):
+def apple_fall():
   trtl.tracer(True)
-  active_apple.clear()
-  active_apple.sety(-200)
-  active_apple.hideturtle()
-  reset_apple(active_apple)
+  apple.clear()
+  apple.sety(-200)
+  apple.hideturtle()
+  reset_apple(apple)
 
 def write_letter(active_apple:trtl.Turtle, letter: str):
-  ''' Doc comments '''
+  ''' 
+  Writes a given letter using a given turtle.
+
+  Arguments: 
+  active_apple -- a turtle | letter -- a string
+  '''
   trtl.tracer(False)
   x = active_apple.xcor()
   y = active_apple.ycor()
@@ -47,11 +55,9 @@ def write_letter(active_apple:trtl.Turtle, letter: str):
   wn.update()
 
 #-----function calls-----
+curr_letter = letters.pop(rand.randint(0, len(letters) - 1))
+
 draw_apple(apple)
-
-curr_letter = letters[rand.randint(0, len(letters) - 1)]
-
-write_letter(apple, curr_letter.capitalize())
 wn.onkeypress(apple_fall, curr_letter)
 
 wn.listen()
