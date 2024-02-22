@@ -6,7 +6,7 @@ import turtle as trtl
 apple_image = "apple.gif" # Store the file name of your shape
 
 wn = trtl.Screen()
-wn.setup(width=1.0, height=1.0)
+wn.setup(width=0.5, height=1.0)
 wn.addshape(apple_image) # Make the screen aware of the new file
 wn.bgpic("background.gif")
 
@@ -25,17 +25,22 @@ def draw_apple(active: trtl.Turtle):
   active.shape(apple_image)
   write_letter(active, curr_letter.capitalize())
   wn.update()
+  wn.onkeypress(drop_apple, curr_letter)
+
 
 def reset_apple(active_apple):
+  global curr_letter
   trtl.tracer(False)
+  curr_letter = letters.pop(rand.randint(0, len(letters) - 1))
   active_apple.goto(rand.randint(-180, 180), 0)
+  draw_apple(active_apple)
 
-def apple_fall():
+def drop_apple():  
   trtl.tracer(True)
   apple.clear()
   apple.sety(-200)
-  apple.hideturtle()
   reset_apple(apple)
+  
 
 def write_letter(active_apple:trtl.Turtle, letter: str):
   ''' 
@@ -58,7 +63,6 @@ def write_letter(active_apple:trtl.Turtle, letter: str):
 curr_letter = letters.pop(rand.randint(0, len(letters) - 1))
 
 draw_apple(apple)
-wn.onkeypress(apple_fall, curr_letter)
 
 wn.listen()
 wn.mainloop()
