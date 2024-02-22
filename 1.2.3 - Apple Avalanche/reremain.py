@@ -1,4 +1,6 @@
 #   a123_apple_1.py
+from functools import partial
+from copy import deepcopy
 import random as rand
 import turtle as trtl
 
@@ -11,9 +13,11 @@ wn.setup(width=1.0, height=1.0)
 wn.addshape(apple_image) 
 wn.bgpic("background.gif")
 
-letters = ["q", "w", "e", "r", "t", "y", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m"]
+# letters = ["q", "w", "e", "r", "t", "y", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m"]
+letters = ["a", "s", "d", "f"]
+letters_immutable = deepcopy(letters) # for keybind purposes
 
-number_of_apples = 5
+number_of_apples = 4
 
 letter_list: list[str] = []
 apple_list: list[trtl.Turtle] = []
@@ -28,7 +32,7 @@ for i in range(number_of_apples):
 
 #-----functions-----
 def draw_apple(index: int):
-  ''' Inits a turtle as an apple and writes its associated letter.'''
+  ''' Inits and draws an apple and its associated letter.'''
   curr_apple = apple_list[index]
   curr_letter = letter_list[index]
   trtl.tracer(False)
@@ -41,7 +45,7 @@ def draw_apple(index: int):
   wn.update()
 
 def write_letter(active_apple: trtl.Turtle, letter: str):
-  ''' Writes a given letter using a given turtle.'''
+  ''' Writes a given letter using a given apple.'''
   trtl.tracer(False)
   x = active_apple.xcor()
   y = active_apple.ycor()
@@ -53,19 +57,23 @@ def write_letter(active_apple: trtl.Turtle, letter: str):
   wn.update()
 
 def reset_apple(index: int):
-  curr_apple = apple_list[index]
+  '''Redraws the apple at a random position.'''
+  active_apple = apple_list[index]
 
   trtl.tracer(False)
-  curr_apple.goto(rand.randint(-180, 180), 0)
+  active_apple.goto(rand.randint(-180, 180), 0)
   draw_apple(index)
 
 def drop_apple(index: int):
-  curr_apple = apple_list[index]
+  '''Drops an apple and hides it. 
+  
+  If there are still letters to be pressed, resets it. Otherwise, hides it.'''
+  active_apple = apple_list[index]
+  active_apple.clear()
 
   trtl.tracer(True)
-  curr_apple.clear()
-  curr_apple.sety(-200)
-  curr_apple.hideturtle()
+  active_apple.sety(-200)
+  active_apple.hideturtle()
   if letters:
     letter_list[index] = letters.pop(rand.randint(0, len(letters) - 1))
     reset_apple(index)
@@ -73,9 +81,10 @@ def drop_apple(index: int):
     global number_of_apples
     number_of_apples = number_of_apples - 1
 
-def a_typed():
+def typed(letter:str):
+  '''Given a letter, drops the associated apple (if there is one).'''
   for i in range(number_of_apples):
-    if letter_list[i] == "a":
+    if letter_list[i] == letter:
       drop_apple(i)
 
 #-----function calls-----
@@ -83,7 +92,9 @@ for i in range(number_of_apples):
   draw_apple(i)
 
 # some weird hack to create functions goes here
-wn.onkeypress(a_typed, "a")
+for l in letters_immutable:
+  partial_func = partial(typed, l)
+  wn.onkeypress(partial_func, l)
 
 wn.listen()
 wn.mainloop()
