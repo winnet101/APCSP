@@ -9,8 +9,8 @@ wall_color = "black"
 maze = trtl.Turtle()
 trtl.tracer(False)
 maze.pencolor(wall_color)
-maze.pensize(2)
-maze.setheading(90)
+maze.pensize(3)
+maze.setheading(180)
 maze.hideturtle()
 
 wn = maze.screen
@@ -26,7 +26,7 @@ for i in range(number_of_walls):
     maze.pendown()
 
     maze.forward(wall_length)
-    wall_length = wall_length + path_width
+    wall_length += path_width
     maze.left(90)
     
 wn.update() 
