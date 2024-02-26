@@ -7,15 +7,16 @@ path_width = 10
 wall_color = "black"
 
 # --- init ---
+trtl.tracer(False)
+
 maze = trtl.Turtle()
+wn = maze.screen
 maze.pencolor(wall_color)
 maze.pensize(3)
 maze.setheading(180)
 maze.hideturtle()
 
-wn = maze.screen
-
-wall_length = 10
+wall_length = 15
 for i in range(number_of_walls):
   for j in range(4):
     door_length = path_width * 2
@@ -23,39 +24,56 @@ for i in range(number_of_walls):
 
     # randomize locations
     def get_locations():
-      if (wall_length - door_length) > door_length:
-        door = rand.randint(door_length, wall_length - door_length)
-        barrier = rand.randint(door_length, wall_length - door_length)
-        return (door, barrier)
+      if i < 2:
+        if (wall_length - (door_length )) > door_length:
+          door = rand.randint(door_length , wall_length - (door_length))
+          barrier = rand.randint(door_length , wall_length - (door_length))
+          return (door, barrier)
       else:
-        return False
-      
+        if (wall_length - (door_length * 2)) > door_length * 2:
+          door = rand.randint(door_length * 2, wall_length - (door_length * 2))
+          barrier = rand.randint(door_length * 2, wall_length - (door_length * 2))
+          return (door, barrier)
+        else:
+          return False
+        
     lengths = get_locations()
     if lengths:
       door = lengths[0]
       barrier = lengths[1]
-
-    # draw door
-    if lengths:
-      maze.forward(door)
-      maze.penup()
-      maze.forward(door_length)
-      maze.pendown()
-      true_length -= (door + door_length)
-
-    # draw barrier
-    if lengths:
-      maze.forward(barrier)
-      maze.left(90)
-      maze.forward(door_length)
-      maze.backward(door_length)
-      maze.right(90)
-      true_length -= barrier
+      if i < 2:
+        draw_door(door)
+      else:
+        if door < barrier:
+          draw_door(door)
+          barrier -= door
+          draw_barrier(barrier)
+        else:
+          draw_barrier(barrier)
+          door -= barrier
+          draw_door(door)
 
     maze.forward(true_length)
 
     wall_length += path_width
     maze.left(90)
+        
+    def draw_door(dist: int | float):
+      maze.forward(dist)
+      maze.penup()
+      maze.forward(door_length)
+      maze.pendown()
+      global true_length
+      true_length -= (dist + door_length)
+
+    def draw_barrier(dist: int | float):
+      maze.forward(dist)
+      maze.left(90)
+      maze.forward(door_length)
+      maze.backward(door_length)
+      maze.right(90)
+      global true_length
+      true_length -= (dist)
     
 wn.update() 
 wn.mainloop()

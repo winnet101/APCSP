@@ -81,7 +81,7 @@ def handleClick(x, y):
   else:
     spot.hideturtle()
   
-def resize():
+def resize(): 
   sizes = [0.5, 1, 1.5, 2]
   spot.shapesize(r.choice(sizes))
 
