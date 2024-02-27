@@ -7,6 +7,7 @@ number_of_walls = 6
 path_width = 10
 wall_color = "black"
 wall_length = 15
+true_length = wall_length
 
 # --- init ---
 trtl.tracer(False)
@@ -34,12 +35,14 @@ def key_move(key:str):
       runner.seth(180)
     case "Right":
       runner.seth(0)
-  print(key) 
+  wn.update()
 
 def draw_maze():
   for i in range(number_of_walls):
     for j in range(4):
       door_length = path_width * 2
+      global true_length
+      global wall_length
       true_length = wall_length
 
       # randomize locations
@@ -78,27 +81,25 @@ def draw_maze():
       wall_length += path_width
       maze.left(90)
           
-      def draw_door(dist: int | float):
+      def draw_door(dist: int):
         maze.forward(dist)
         maze.penup()
         maze.forward(door_length)
         maze.pendown()
-        global true_length
+        global true_length 
         true_length -= (dist + door_length)
 
-      def draw_barrier(dist: int | float):
+      def draw_barrier(dist: int):
         maze.forward(dist)
         maze.left(90)
         maze.forward(door_length)
         maze.backward(door_length)
         maze.right(90)
-        global true_length
+        global true_length 
         true_length -= (dist)
   wn.update()
 
 draw_maze()
-trtl.tracer(True)
-
 for key in runner_keys:
   key_press = partial(key_move, key)
   wn.onkeypress(key_press, key)
