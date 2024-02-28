@@ -7,7 +7,7 @@ path_width = 10
 wall_color = "black"
 
 # --- init ---
-trtl.tracer(False)
+# trtl.tracer(False)
 
 maze = trtl.Turtle()
 wn = maze.screen
