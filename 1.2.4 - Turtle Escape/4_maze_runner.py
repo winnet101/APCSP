@@ -25,18 +25,7 @@ runner.goto(0, 0)
 runner_speed = 10
 runner_keys = ["Up", "Down", "Left", "Right"]
 
-def key_move(key:str):
-  match key:
-    case "Up":
-      runner.seth(90)
-    case "Down":
-      runner.seth(270)
-    case "Left":
-      runner.seth(180)
-    case "Right":
-      runner.seth(0)
-  wn.update()
-
+# --- functions ---
 def draw_maze():
   for i in range(number_of_walls):
     for j in range(4):
@@ -99,10 +88,30 @@ def draw_maze():
         true_length -= (dist)
   wn.update()
 
+def arrow_turn(key:str):
+  match key:
+    case "Up":
+      runner.seth(90)
+    case "Down":
+      runner.seth(270)
+    case "Left":
+      runner.seth(180)
+    case "Right":
+      runner.seth(0)
+  wn.update()
+
+def move_forward():
+  runner.forward(10)
+  wn.update()
+
+# --- calls ---
 draw_maze()
+
 for key in runner_keys:
-  key_press = partial(key_move, key)
+  key_press = partial(arrow_turn, key)
   wn.onkeypress(key_press, key)
+  
+wn.onkeypress(move_forward, "g")
 
 wn.listen()
 wn.mainloop()
