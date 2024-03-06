@@ -1,28 +1,39 @@
 import turtle as trtl 
 from PIL import Image, ImageOps
-from threading import Timer
-from functools import partial
+import os
 
 cookie_img = "cookie.gif"
 
+cookies = 0
+
 # init screen
+trtl.tracer(0)
 wn = trtl.Screen()
+wn.setup(1.0, 1.0)
 wn.addshape(cookie_img)
 
 cookie = trtl.Turtle()
+cookie_size = 300
 cookie.shape(cookie_img)
+wn.update()
 
-prev_size:tuple[int, int] = (150, 150)
+cookies_writer = trtl.Turtle()
+cookies_writer.penup()
+cookies_writer.goto(-300, 300)
+cookies_writer.hideturtle()
+cookies_writer.pendown()
 
-def resize_cookie(resize:int):
+for file in os.listdir("assets"):
+  file_path = os.path.join("assets/", file)
+  os.unlink(file_path)
+
+prev_size:tuple[int, int] = (cookie_size, cookie_size)
+is_animating = 0
+
+def abs_resize_cookie(resize:int):
   with Image.open(cookie_img) as im:
     global prev_size
-    new_size_arr = []
-
-    for coord in prev_size:
-      coord += resize
-      new_size_arr.append(coord)
-
+    new_size_arr:list = [resize, resize]
     new_size = tuple(new_size_arr)
     prev_size = new_size
 
@@ -32,35 +43,41 @@ def resize_cookie(resize:int):
 
   wn.addshape(new_img)
   cookie.shape(new_img)
-  print(f"resized to {new_size}")
+  wn.update()
 
-def abs_resize_cookie(resize:int):
-  with Image.open(cookie_img) as im:
-    new_size_arr:list = [resize, resize]
-    new_size = tuple(new_size_arr)
+def bounce_cookie(init_size: int):
+  global is_animating
 
-    new_img = f"assets/cookie{new_size[0]}.gif"
+  if is_animating:
+    return
+  else:
+    is_animating += 1
+    abs_resize_cookie(init_size)
+    for i in range(5):
+      abs_resize_cookie(init_size + (i * 10))
+      wn.update()
 
-    ImageOps.contain(im, new_size).save(new_img)
+    for i in range(5):
+      abs_resize_cookie((init_size + (5 * 10)) + (-i * 10))
+      wn.update()
+    abs_resize_cookie(init_size)
+    wn.update()
+  is_animating = 0
 
-  wn.addshape(new_img)
-  cookie.shape(new_img)
+def handle_cookie_click(x, y):
+  global cookies
+  update_score(1)
+  bounce_cookie(cookie_size)
 
-def set_timeout(time:float, func, args):
-  new_func = partial(func, args)
-  t = Timer(time, new_func)
-  t.start()
+def update_score(new: int):
+  global cookies
+  cookies_writer.clear()
+  cookies += new
+  cookies_writer.write(cookies, font=("Times New Roman", 20, "normal"))
+  wn.update()
 
-def bounce_cookie(x, y):
-  abs_resize_cookie(150)
-  for i in range(5):
-    resize_cookie(i * 15)
-
-  for i in range(5):
-    resize_cookie(-i * 15)
-
-
-cookie.onclick(bounce_cookie)
+abs_resize_cookie(cookie_size)
+cookie.onclick(handle_cookie_click)
 
 wn.listen()
 wn.mainloop()
