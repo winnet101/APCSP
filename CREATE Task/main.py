@@ -1,6 +1,7 @@
 import turtle as trtl 
 from PIL import Image, ImageOps
 import os
+from utils import draw_rect, quickmove
 
 cookie_img = "cookie.gif"
 
@@ -14,21 +15,26 @@ wn.addshape(cookie_img)
 
 cookie = trtl.Turtle()
 cookie_size = 300
+quickmove(cookie, -300, 0)
 cookie.shape(cookie_img)
 wn.update()
 
 cookies_writer = trtl.Turtle()
-cookies_writer.penup()
-cookies_writer.goto(-300, 300)
 cookies_writer.hideturtle()
-cookies_writer.pendown()
+quickmove(cookies_writer, -300, 300)
+
+buttons = ["cursor"]
+button_turtles:list[trtl.Turtle] = []
+
+for button in buttons:
+  button_turtles.append(trtl.Turtle())
 
 for file in os.listdir("assets"):
   file_path = os.path.join("assets/", file)
   os.unlink(file_path)
 
 prev_size:tuple[int, int] = (cookie_size, cookie_size)
-is_animating = 0
+is_animating = False
 
 def abs_resize_cookie(resize:int):
   with Image.open(cookie_img) as im:
@@ -47,11 +53,10 @@ def abs_resize_cookie(resize:int):
 
 def bounce_cookie(init_size: int):
   global is_animating
-
   if is_animating:
     return
   else:
-    is_animating += 1
+    is_animating = True
     abs_resize_cookie(init_size)
     for i in range(5):
       abs_resize_cookie(init_size + (i * 10))
@@ -62,12 +67,7 @@ def bounce_cookie(init_size: int):
       wn.update()
     abs_resize_cookie(init_size)
     wn.update()
-  is_animating = 0
-
-def handle_cookie_click(x, y):
-  global cookies
-  update_score(1)
-  bounce_cookie(cookie_size)
+  is_animating = False
 
 def update_score(new: int):
   global cookies
@@ -75,6 +75,25 @@ def update_score(new: int):
   cookies += new
   cookies_writer.write(cookies, font=("Times New Roman", 20, "normal"))
   wn.update()
+
+def handle_cookie_click(x, y):
+  global cookies
+  update_score(1)
+  bounce_cookie(cookie_size)
+
+def draw_button(t:trtl.Turtle, x:int, y:int): 
+  t.color("brown") 
+  new_button = draw_rect(t, x, y, 200, 100)
+  print(new_button)
+  
+  def handle_button_click(x, y):
+    if (new_button[0] < x < new_button[2]) and (new_button[1] < y < new_button[3]):
+      print("clicked!")
+
+  wn.onscreenclick(handle_button_click)
+
+for i, button in enumerate(buttons):
+  draw_button(button_turtles[i], 0, 0)
 
 abs_resize_cookie(cookie_size)
 cookie.onclick(handle_cookie_click)
