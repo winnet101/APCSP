@@ -34,6 +34,7 @@ def draw_rect(t:Turtle, x:int, y:int, width:int, height: int | None = None):
     walls.append(t.ycor())
     t.forward(width)
     t.right(90)
+  
   t.end_fill()
 
   return walls

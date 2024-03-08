@@ -1,0 +1,17 @@
+buildings {
+  cursor: 0,
+  grandma: 0,
+  infiniplex: 0
+}
+
+currency {
+  cookies: 0,
+  heavenly_chips: 0,
+  ascensions: 0
+}
+
+upgrades {
+  cursor: 0,
+  grandma: 0,
+  infiniplex: 0
+}
