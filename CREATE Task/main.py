@@ -1,6 +1,7 @@
 import turtle as trtl 
 from PIL import Image, ImageOps
 import os
+from typing import TypedDict
 from utils import draw_rect, quickmove, abs_resize, clear_folder
 
 cookie_img = "assets/cookie.gif"
@@ -26,39 +27,36 @@ cookies_writer = trtl.Turtle()
 cookies_writer.hideturtle()
 quickmove(cookies_writer, -300, 300)
 
-buildings = {
-  "cursor": 0,
-  "grandma": 0,
-  "infiniplex": 0
+class Buildings(TypedDict):
+  owned: int
+  cost: int
+  effect: float
+  cache: float
+
+buildings:dict[str, Buildings] = {
+  "cursor": {
+    "owned": 1,
+    "cost": 10,
+    "effect": 0.1,
+    "cache": 0.0 
+  },
+  "grandma": {
+    "owned": 0,
+    "cost": 100,
+    "effect": 1,
+    "cache": 0.0 
+  },
+  "infiniplex": {
+    "owned": 0,
+    "cost": 1000,
+    "effect": 10,
+    "cache": 0.0 
+  }
 }
 
 building_turtles:list[trtl.Turtle] = []
 for building in buildings:
   building_turtles.append(trtl.Turtle())
-
-building_costs:list[int] = []
-for building in buildings:
-  match building:
-    case "cursor":
-      building_costs.append(10)
-    case "grandma":
-      building_costs.append(100)
-    case "infiniplex":
-      building_costs.append(10000)
-    case _:
-      print(f"[BUILDING_COSTS]: Building {building} is not defined.")
-
-building_effects:list[float] = []
-for building in buildings:
-  match building:
-    case "cursor":
-      building_effects.append(0.1)
-    case "grandma":
-      building_effects.append(1)
-    case "infiniplex":
-      building_effects.append(100)
-    case _:
-      print(f"[BUILDING_EFFECTS]: Building {building} is not defined.")
 
 clear_folder(COOKIE_IMG_PATH)
 clear_folder(ICON_IMG_PATH)
@@ -104,16 +102,9 @@ def handle_cookie_click(x, y):
   update_cookies(1)
   bounce_cookie(cookie_size)
 
-def get_building_cost(building: str):
-  return building_costs[[building for building, _number in buildings.items()].index(building)]
-
-def get_building_effect(building: str):
-  return building_effects[[building for building, _number in buildings.items()].index(building)]
-
 def draw_button(t:trtl.Turtle, x:int, y:int, building:str): 
-  
   t.color("#87481e") 
-  new_button = tuple(draw_rect(t, x, y, 400, 100))
+  new_button = tuple(draw_rect(t, x, y, 450, 100))
   
   # image
   t.color("white")
@@ -127,22 +118,38 @@ def draw_button(t:trtl.Turtle, x:int, y:int, building:str):
 
   # cost
   quickmove(t, int(t.xcor()), int(t.ycor()) - 15)
-  t.write(f"Cost: {get_building_cost(building)}", font=("Verdana", 10, "normal"))
+  t.write(f"Cost: {buildings[building]['cost']}", font=("Verdana", 10, "normal"))
 
-  quickmove(t, x + 100, y - 30)
-  t.write(buildings.get(building), font=("Verdana", 20, "normal"))
+  # owned
+  quickmove(t, int(new_button[2]) - 50, y-30)
+  t.write(buildings[building]["owned"], font=("Verdana", 40, "normal"))
 
   def handle_button_click(xclick, yclick):
     if (new_button[0] < xclick < new_button[2]) and (new_button[3] < yclick < new_button[1]):
-      if cookies >= get_building_cost(building):
-        update_cookies(-get_building_cost(building))
-        buildings[building] += 1
+      if cookies >= buildings[building]["cost"]:
+        update_cookies(-buildings[building]["cost"])
+        buildings[building]["cost"] = int(buildings[building]["cost"] * 1.3)
+        buildings[building]["owned"] += 1
         draw_button(t, x, y, building)
 
   wn.onscreenclick(handle_button_click, add=True)
 
+def handle_buildings():
+  for v in buildings.values():
+    v["cache"] += (v["effect"] * v["owned"])
+    add = 0
+    if v["effect"] == 0.1:
+        print(v["cache"])
+    while v["cache"] > 1:
+      v["cache"] -= 1
+      add += 1
+    update_cookies(add)
+  wn.ontimer(handle_buildings, 1000)
+
+wn.ontimer(handle_buildings, 1000)
+
 for i, building in enumerate(buildings):
-  draw_button(building_turtles[i], 400, (i * -120) + 120, building)
+  draw_button(building_turtles[i], 300, (i * -120) + 120, building)
 
 abs_resize_cookie(cookie_size)
 update_cookies(0)
