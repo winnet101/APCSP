@@ -21,11 +21,17 @@ cookie = trtl.Turtle()
 cookie_size = 300
 quickmove(cookie, -300, 0)
 cookie.shape(cookie_img)
-wn.update()
+
 
 cookies_writer = trtl.Turtle()
 cookies_writer.hideturtle()
 quickmove(cookies_writer, -300, 300)
+
+cps_writer = trtl.Turtle()
+cps_writer.hideturtle()
+quickmove(cps_writer, -300, 270)
+
+wn.update()
 
 class Buildings(TypedDict):
   owned: int
@@ -35,7 +41,7 @@ class Buildings(TypedDict):
 
 buildings:dict[str, Buildings] = {
   "cursor": {
-    "owned": 1,
+    "owned": 0,
     "cost": 10,
     "effect": 0.1,
     "cache": 0.0 
@@ -97,6 +103,16 @@ def update_cookies(new_score: int):
   cookies_writer.write(cookies, font=("Verdana", 20, "normal"))
   wn.update()
 
+def update_cps():
+  global buildings
+  cps_writer.clear()
+  curr_cps = 0.0
+  for v in buildings.values():
+    curr_cps += v["effect"] * v["owned"]
+    curr_cps = round(curr_cps, 1)
+  cps_writer.write(f"Cookies per second: {curr_cps}", font=("Verdana", 10, "normal"), align="center")
+update_cps()
+
 def handle_cookie_click(x, y):
   global cookies
   update_cookies(1)
@@ -118,11 +134,11 @@ def draw_button(t:trtl.Turtle, x:int, y:int, building:str):
 
   # cost
   quickmove(t, int(t.xcor()), int(t.ycor()) - 15)
-  t.write(f"Cost: {buildings[building]['cost']}", font=("Verdana", 10, "normal"))
+  t.write(f"Cost: {buildings[building]['cost']}", font=("Verdana", 10, "normal"), align="center")
 
   # owned
   quickmove(t, int(new_button[2]) - 50, y-30)
-  t.write(buildings[building]["owned"], font=("Verdana", 40, "normal"))
+  t.write(buildings[building]["owned"], font=("Verdana", 40, "normal"), align="right")
 
   def handle_button_click(xclick, yclick):
     if (new_button[0] < xclick < new_button[2]) and (new_button[3] < yclick < new_button[1]):
@@ -130,6 +146,7 @@ def draw_button(t:trtl.Turtle, x:int, y:int, building:str):
         update_cookies(-buildings[building]["cost"])
         buildings[building]["cost"] = int(buildings[building]["cost"] * 1.3)
         buildings[building]["owned"] += 1
+        update_cps()
         draw_button(t, x, y, building)
 
   wn.onscreenclick(handle_button_click, add=True)
@@ -137,16 +154,15 @@ def draw_button(t:trtl.Turtle, x:int, y:int, building:str):
 def handle_buildings():
   for v in buildings.values():
     v["cache"] += (v["effect"] * v["owned"])
+    v["cache"] = round(v["cache"], 1)
     add = 0
-    if v["effect"] == 0.1:
-        print(v["cache"])
-    while v["cache"] > 1:
+    while v["cache"] >= 1:
       v["cache"] -= 1
       add += 1
     update_cookies(add)
   wn.ontimer(handle_buildings, 1000)
 
-wn.ontimer(handle_buildings, 1000)
+handle_buildings()
 
 for i, building in enumerate(buildings):
   draw_button(building_turtles[i], 300, (i * -120) + 120, building)

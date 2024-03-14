@@ -51,7 +51,7 @@ def abs_resize(t:Turtle, img_path:str, new_size:int, NEW_IMG_FOLDER:str = "asset
       name = ""
       true_path = img_path
       if "/" in img_path:
-        true_path_arr = img_path.split("/")
+        true_path_arr:list[str] = img_path.split("/")
         true_path = true_path_arr[len(true_path_arr) - 1]
       for char in true_path:
         if char == ".":
