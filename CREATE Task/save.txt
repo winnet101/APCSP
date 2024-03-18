@@ -1,17 +1,24 @@
-buildings {
-  cursor: 0,
-  grandma: 0,
-  infiniplex: 0
+buildings = {
+  "cursor": {
+    "owned": 0,
+    "cost": 10,
+    "effect": 0.1,
+    "cache": 0.0 
+  },
+  "grandma": {
+    "owned": 0,
+    "cost": 100,
+    "effect": 1,
+    "cache": 0.0 
+  },
+  "infiniplex": {
+    "owned": 0,
+    "cost": 1000,
+    "effect": 10,
+    "cache": 0.0 
+  }
 }
 
-currency {
-  cookies: 0,
-  heavenly_chips: 0,
-  ascensions: 0
-}
-
-upgrades {
-  cursor: 0,
-  grandma: 0,
-  infiniplex: 0
-}
+upgrades = [
+  
+]
