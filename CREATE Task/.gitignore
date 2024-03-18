@@ -1,0 +1,10 @@
+# Editor
+.vscode/*
+__pycache__/*
+
+# Generated assets
+cookie_cache/*
+icon_cache/*
+
+# Save file
+save.txt

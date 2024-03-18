@@ -56,7 +56,7 @@ def isolate_img_name(img_path: str):
 
 def abs_resize(t:Turtle, img_path:str, new_size:int, NEW_IMG_FOLDER:str = "assets"):
   '''Given an image path, resizes it and sets the given turtle to that image.
-  :returns - A tuple of the new size.'''
+  :returns - The new image path.'''
   with Image.open(img_path) as im:
     new_size_tuple = (new_size, new_size)
 
@@ -66,7 +66,19 @@ def abs_resize(t:Turtle, img_path:str, new_size:int, NEW_IMG_FOLDER:str = "asset
   t.screen.addshape(new_img)
   t.shape(new_img)
   t.screen.update()
-  return new_size_tuple
+  return new_img
+
+def rotate(t:Turtle, img_path: str, angle:int, NEW_IMG_FOLDER:str = "assets"):
+  '''Given an image path, rotates it and sets the given turtle to that image.
+  :returns - The new image path.'''
+  with Image.open(img_path) as im:
+    new_img = f"{NEW_IMG_FOLDER}/{isolate_img_name(img_path)}{angle}deg.gif"
+    im.rotate(angle).save(new_img, transparency=0)
+  
+  t.screen.addshape(new_img)
+  t.shape(new_img)
+  t.screen.update()  
+  return new_img  
 
 def clear_folder(path:str):
   '''Clears all files within a folder.

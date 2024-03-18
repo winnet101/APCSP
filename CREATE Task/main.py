@@ -2,11 +2,14 @@ import turtle as trtl
 import random as rand
 from typing import TypedDict
 from utils import draw_rect, quickmove, abs_resize, clear_folder
+from cursor import draw_cursor
 
 # --- init vars ---
 cookie_img = "assets/cookie.gif"
 COOKIE_CACHE_PATH = "cookie_cache"
 ICON_CACHE_PATH = "icon_cache"
+cookiex = -300
+cookiey = 0 
 
 cookies = 0
 
@@ -25,7 +28,7 @@ draw_backgrounds()
 
 cookie = trtl.Turtle()
 cookie_size = 300
-quickmove(cookie, -300, 0)
+quickmove(cookie, cookiex, cookiey)
 cookie.shape(cookie_img)
 
 prev_size:tuple[int, int] = (cookie_size, cookie_size)
@@ -154,7 +157,7 @@ def draw_button(t:trtl.Turtle, x:int, y:int, building:str):
     if (new_button[0] < xclick < new_button[2]) and (new_button[3] < yclick < new_button[1]):
       if cookies >= buildings[building]["cost"]:
         update_cookies(-buildings[building]["cost"])
-        buildings[building]["cost"] = int(buildings[building]["cost"] * 1.3)
+        buildings[building]["cost"] = int(buildings[building]["cost"] * 1.2)
         buildings[building]["owned"] += 1
         update_cps()
         draw_button(t, x, y, building)
@@ -164,14 +167,14 @@ def draw_button(t:trtl.Turtle, x:int, y:int, building:str):
 # might call more often 
 def handle_buildings():
   for v in buildings.values():
-    v["cache"] += (v["effect"] * v["owned"])
-    v["cache"] = round(v["cache"], 1)
+    v["cache"] += ((v["effect"] / 10) * v["owned"])
+    # v["cache"] = round(v["cache"], 1)
     add = 0
     while v["cache"] >= 1:
       v["cache"] -= 1
       add += 1
     update_cookies(add)
-  wn.ontimer(handle_buildings, 1000)
+  wn.ontimer(handle_buildings, 100)
 
 # --- call funcs ---
 abs_resize_cookie(cookie_size)
@@ -183,6 +186,7 @@ handle_buildings()
 update_cps()
 update_cookies(0)
 cookie.onclick(handle_cookie_click)
+draw_cursor(cookiex - 150, cookiey)
 
 wn.listen()
 wn.mainloop()
