@@ -1,5 +1,5 @@
 from turtle import Turtle
-from PIL import Image, ImageOps, ImageEnhance
+from PIL import Image, ImageOps
 import os
 
 def quickmove(t:Turtle, x:int, y:int):
@@ -72,8 +72,13 @@ def rotate(t:Turtle, img_path: str, angle:int, NEW_IMG_FOLDER:str = "assets"):
   '''Given an image path, rotates it and sets the given turtle to that image.
   :returns - The new image path.'''
   with Image.open(img_path) as im:
-    new_img = f"{NEW_IMG_FOLDER}/{isolate_img_name(img_path)}{angle}deg.gif"
-    im.rotate(angle).save(new_img, transparency=0)
+    while angle >= 360:
+      angle //= 360 
+    print(angle)
+
+    new_img = f"{NEW_IMG_FOLDER}/{isolate_img_name(img_path)}:{angle}deg.gif"
+    if new_img not in os.listdir(NEW_IMG_FOLDER):
+      im.rotate(angle, expand=True).convert("RGBA").save(new_img)
   
   t.screen.addshape(new_img)
   t.shape(new_img)

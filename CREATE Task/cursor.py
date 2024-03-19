@@ -14,7 +14,7 @@ def draw_cursor(cookiex: int, cookiey: int):
     cursor.forward(3)
     cursor.clear()
     cursor.stamp()
-    rotate(cursor, resized_cursor_img, int(cursor.heading() - 180), "icon_cache")
+    rotate(cursor, resized_cursor_img, int((cursor.heading() - 180) - 30), "icon_cache")
     cursor.screen.ontimer(turn_cursor, 10)
 
   cursor.screen.ontimer(turn_cursor, 0)
