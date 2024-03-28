@@ -68,15 +68,15 @@ def abs_resize(t:Turtle, img_path:str, new_size:int, NEW_IMG_FOLDER:str = "asset
   t.screen.update()
   return new_img
 
-def rotate(t:Turtle, img_path: str, angle:int, NEW_IMG_FOLDER:str = "assets"):
+def rotate(t:Turtle, img_path: str, angle:float, NEW_IMG_FOLDER:str = "assets"):
   '''Given an image path, rotates it and sets the given turtle to that image.
   :returns - The new image path.'''
   with Image.open(img_path) as im:
-    while angle >= 360:
-      angle //= 360 
-    print(angle)
+    while angle > 360:
+      angle = angle - 360 
+      # just so we're only caching 360 images instead of literally infinite
 
-    new_img = f"{NEW_IMG_FOLDER}/{isolate_img_name(img_path)}:{angle}deg.gif"
+    new_img = f"{NEW_IMG_FOLDER}/rotated{isolate_img_name(img_path)}-{angle}deg.gif"
     if new_img not in os.listdir(NEW_IMG_FOLDER):
       im.rotate(angle, expand=True).convert("RGBA").save(new_img)
   

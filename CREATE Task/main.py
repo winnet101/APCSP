@@ -2,14 +2,13 @@ import turtle as trtl
 import random as rand
 from typing import TypedDict
 from utils import draw_rect, quickmove, abs_resize, clear_folder
-from cursor import draw_cursor
+from buildings import rotate_cursor
 
 # --- init vars ---
 cookie_img = "assets/cookie.gif"
 COOKIE_CACHE_PATH = "cookie_cache"
 ICON_CACHE_PATH = "icon_cache"
-cookiex = -300
-cookiey = 0 
+cookie_coords = (-300, 0)
 
 cookies = 0
 
@@ -28,7 +27,7 @@ draw_backgrounds()
 
 cookie = trtl.Turtle()
 cookie_size = 300
-quickmove(cookie, cookiex, cookiey)
+quickmove(cookie, cookie_coords[0], cookie_coords[1])
 cookie.shape(cookie_img)
 
 prev_size:tuple[int, int] = (cookie_size, cookie_size)
@@ -101,13 +100,13 @@ def bounce_cookie(init_size: int):
     abs_resize_cookie(init_size)
     for i in range(5):
       abs_resize_cookie(init_size + (i * 10))
-      wn.update()
+      # wn.update()
 
     for i in range(5):
       abs_resize_cookie((init_size + (5 * 10)) + (-i * 10))
-      wn.update()
+      # wn.update()
     abs_resize_cookie(init_size)
-    wn.update()
+    # wn.update()
   is_animating = False
 
 def update_cookies(new_score: int):
@@ -115,7 +114,7 @@ def update_cookies(new_score: int):
   cookies_writer.clear()
   cookies += new_score
   cookies_writer.write(cookies, font=("Verdana", 20, "normal"))
-  wn.update()
+  # wn.update()
 
 def update_cps():
   global buildings
@@ -186,7 +185,10 @@ handle_buildings()
 update_cps()
 update_cookies(0)
 cookie.onclick(handle_cookie_click)
-draw_cursor(cookiex - 150, cookiey)
+rotate_cursor(trtl.Turtle(), 0, 200, 100, cookie_coords)
+
+update_screen = lambda: wn.update(); wn.ontimer(update_screen, 100)
+wn.ontimer(update_screen, 100)
 
 wn.listen()
 wn.mainloop()
