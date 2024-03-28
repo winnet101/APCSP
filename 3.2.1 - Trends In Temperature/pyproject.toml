@@ -1,0 +1,18 @@
+[tool.poetry]
+package-mode = false
+name = "3-2-1 - trends in temperature"
+version = "0.1.0"
+description = ""
+authors = ["winnet101 <115325533+winnet101@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "3"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+matplotlib = "^3.8.3"
+pandas = "^2.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
