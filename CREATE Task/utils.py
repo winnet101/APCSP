@@ -1,6 +1,7 @@
 from turtle import Turtle
 from PIL import Image, ImageOps
 import os
+from functools import partial
 
 def quickmove(t:Turtle, x:int, y:int):
   '''Moves the turtle to a given location without pen.
@@ -61,28 +62,30 @@ def abs_resize(t:Turtle, img_path:str, new_size:int, NEW_IMG_FOLDER:str = "asset
     new_size_tuple = (new_size, new_size)
 
     new_img = f"{NEW_IMG_FOLDER}/{isolate_img_name(img_path)}{new_size}.gif"
-    ImageOps.contain(im, new_size_tuple).save(new_img)
+
+    if new_img not in os.listdir(NEW_IMG_FOLDER):
+      ImageOps.contain(im, new_size_tuple).save(new_img)
 
   t.screen.addshape(new_img)
   t.shape(new_img)
-  t.screen.update()
+  # t.screen.update()
   return new_img
 
 def rotate(t:Turtle, img_path: str, angle:float, NEW_IMG_FOLDER:str = "assets"):
   '''Given an image path, rotates it and sets the given turtle to that image.
   :returns - The new image path.'''
   with Image.open(img_path) as im:
+    # just so we're only caching 360 images instead of literally infinite
     while angle > 360:
       angle = angle - 360 
-      # just so we're only caching 360 images instead of literally infinite
 
     new_img = f"{NEW_IMG_FOLDER}/rotated{isolate_img_name(img_path)}-{angle}deg.gif"
     if new_img not in os.listdir(NEW_IMG_FOLDER):
-      im.rotate(angle, expand=True).convert("RGBA").save(new_img)
+      im.convert("RGBA").rotate(angle, expand=True).save(new_img)
   
   t.screen.addshape(new_img)
   t.shape(new_img)
-  t.screen.update()  
+  # t.screen.update()  
   return new_img  
 
 def clear_folder(path:str):
@@ -92,3 +95,8 @@ def clear_folder(path:str):
   for file in os.listdir(path):
     file_path = os.path.join(path, file)
     os.unlink(file_path)
+
+def call_updates(t: Turtle):
+  t.screen.update()
+  update_loop = partial(call_updates, t)
+  t.screen.ontimer(update_loop)

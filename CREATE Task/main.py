@@ -1,8 +1,8 @@
 import turtle as trtl 
 import random as rand
 from typing import TypedDict
-from utils import draw_rect, quickmove, abs_resize, clear_folder
-from buildings import rotate_cursor
+from functools import partial
+from utils import call_updates, draw_rect, quickmove, abs_resize, clear_folder, rotate
 
 # --- init vars ---
 cookie_img = "assets/cookie.gif"
@@ -12,7 +12,7 @@ cookie_coords = (-300, 0)
 
 cookies = 0
 
-trtl.tracer(0)
+trtl.tracer(False)
 wn = trtl.Screen()
 # wn.setup(0.5, 1.0, 630)
 wn.setup(1.0, 1.0)
@@ -40,6 +40,8 @@ quickmove(cookies_writer, -300, 300)
 cps_writer = trtl.Turtle()
 cps_writer.hideturtle()
 quickmove(cps_writer, -300, 270)
+
+cursor_curr_dir = 0
 
 class Buildings(TypedDict):
   owned: int
@@ -175,6 +177,30 @@ def handle_buildings():
     update_cookies(add)
   wn.ontimer(handle_buildings, 100)
 
+def rotate_cursor(t: trtl.Turtle, start_dir: float, radius: int, increment: int, center: tuple[int, int]):
+  global cursor_curr_dir
+  cursor_curr_dir += (start_dir)
+  '''Turns a turtle object into a rotating cursor.
+  :params: increment - number of frames per rotation.'''
+  resized_path = abs_resize(t, "assets/cursor.gif", 20, "icon_cache")
+  rotate(t, resized_path, start_dir + 60, "icon_cache")
+  t.setheading(start_dir + cursor_curr_dir)
+
+  def turn_turtle():
+    global cursor_curr_dir
+    cursor_curr_dir += (365 // increment)
+
+    new_heading = int(t.heading()) + (365 // increment)
+    t.seth(new_heading)
+    rotate(t, resized_path, new_heading + 60, "icon_cache")
+    t.penup()
+    t.goto(center)
+    t.forward(radius)
+    # t.screen.update()
+    t.screen.ontimer(turn_turtle, 10)
+    
+  turn_turtle()
+
 # --- call funcs ---
 abs_resize_cookie(cookie_size)
 
@@ -185,10 +211,13 @@ handle_buildings()
 update_cps()
 update_cookies(0)
 cookie.onclick(handle_cookie_click)
-rotate_cursor(trtl.Turtle(), 0, 200, 100, cookie_coords)
 
-update_screen = lambda: wn.update(); wn.ontimer(update_screen, 100)
-wn.ontimer(update_screen, 100)
+wn.update()
+
+for i in range(10):
+  rotate_cursor(trtl.Turtle(), 0, 200, 100, cookie_coords)
+
+call_updates(cookie)
 
 wn.listen()
 wn.mainloop()
