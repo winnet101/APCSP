@@ -14,16 +14,9 @@ cookies = 0
 
 trtl.tracer(False)
 wn = trtl.Screen()
-# wn.setup(0.5, 1.0, 630)
-wn.setup(1.0, 1.0)
+wn.setup(0.5, 1.0, 630)
+# wn.setup(1.0, 1.0)
 wn.addshape(cookie_img)
-
-def draw_backgrounds():
-  bg_writer = trtl.Turtle()
-  bg_writer.hideturtle()
-  bg_writer.color("sky blue")
-  draw_rect(bg_writer, -300, 0, 500, 850)
-draw_backgrounds()
 
 cookie = trtl.Turtle()
 cookie_size = 300
@@ -40,8 +33,6 @@ quickmove(cookies_writer, -300, 300)
 cps_writer = trtl.Turtle()
 cps_writer.hideturtle()
 quickmove(cps_writer, -300, 270)
-
-cursor_curr_dir = 0
 
 class Buildings(TypedDict):
   owned: int
@@ -77,14 +68,17 @@ for building in buildings:
 clear_folder(COOKIE_CACHE_PATH)
 clear_folder(ICON_CACHE_PATH)
 
+number_of_cursors = 0
+cursor_drawer = trtl.Turtle()
+
 # --- functions ---
-def draw_mini_cookie():
-  mini = trtl.Turtle()
-  mini.hideturtle()
-  mini.penup()
-  abs_resize(mini, cookie_img, 50, COOKIE_CACHE_PATH)
-  mini.goto(rand.randint(-700, -300), 850)
-  mini.stamp()
+# def draw_mini_cookie():
+#   mini = trtl.Turtle()
+#   mini.hideturtle()
+#   mini.penup()
+#   abs_resize(mini, cookie_img, 50, COOKIE_CACHE_PATH)
+#   mini.goto(rand.randint(-700, -300), 850)
+#   mini.stamp()
 
 def abs_resize_cookie(resize:int):
   global prev_size
@@ -92,6 +86,11 @@ def abs_resize_cookie(resize:int):
   new_size_arr:list = [resize, resize]
   new_size = tuple(new_size_arr)
   prev_size = new_size
+
+def handle_cookie_click(x: float, y: float):
+  global cookies
+  handle_cookies(1)
+  bounce_cookie(cookie_size)
 
 def bounce_cookie(init_size: int):
   global is_animating
@@ -102,16 +101,16 @@ def bounce_cookie(init_size: int):
     abs_resize_cookie(init_size)
     for i in range(5):
       abs_resize_cookie(init_size + (i * 10))
-      # wn.update()
+      wn.update()
 
     for i in range(5):
       abs_resize_cookie((init_size + (5 * 10)) + (-i * 10))
-      # wn.update()
+      wn.update()
     abs_resize_cookie(init_size)
-    # wn.update()
+    wn.update()
   is_animating = False
 
-def update_cookies(new_score: int):
+def handle_cookies(new_score: int):
   global cookies
   cookies_writer.clear()
   cookies += new_score
@@ -127,12 +126,7 @@ def update_cps():
     curr_cps = round(curr_cps, 1)
   cps_writer.write(f"Cookies per second: {curr_cps}", font=("Verdana", 10, "normal"), align="center")
 
-def handle_cookie_click(x: float, y: float):
-  global cookies
-  update_cookies(1)
-  bounce_cookie(cookie_size)
-
-def draw_button(t:trtl.Turtle, x:int, y:int, building:str): 
+def create_button(t:trtl.Turtle, x:int, y:int, building:str): 
   t.color("#87481e") 
   new_button = tuple(draw_rect(t, x, y, 450, 100))
   
@@ -157,11 +151,13 @@ def draw_button(t:trtl.Turtle, x:int, y:int, building:str):
   def handle_button_click(xclick: float, yclick: float):
     if (new_button[0] < xclick < new_button[2]) and (new_button[3] < yclick < new_button[1]):
       if cookies >= buildings[building]["cost"]:
-        update_cookies(-buildings[building]["cost"])
+        handle_cookies(-buildings[building]["cost"])
         buildings[building]["cost"] = int(buildings[building]["cost"] * 1.2)
         buildings[building]["owned"] += 1
         update_cps()
-        draw_button(t, x, y, building)
+        create_button(t, x, y, building)
+        if building == "cursor":
+          add_cursor()
 
   wn.onscreenclick(handle_button_click, add=True)
 
@@ -174,50 +170,45 @@ def handle_buildings():
     while v["cache"] >= 1:
       v["cache"] -= 1
       add += 1
-    update_cookies(add)
+    handle_cookies(add)
   wn.ontimer(handle_buildings, 100)
 
-def rotate_cursor(t: trtl.Turtle, start_dir: float, radius: int, increment: int, center: tuple[int, int]):
-  global cursor_curr_dir
-  cursor_curr_dir += (start_dir)
+def add_cursor():
   '''Turns a turtle object into a rotating cursor.
-  :params: increment - number of frames per rotation.'''
-  resized_path = abs_resize(t, "assets/cursor.gif", 20, "icon_cache")
-  rotate(t, resized_path, start_dir + 60, "icon_cache")
-  t.setheading(start_dir + cursor_curr_dir)
+  :params: freq - number of frames per rotation.'''
+  global number_of_cursors
+  number_of_cursors += 1
 
-  def turn_turtle():
-    global cursor_curr_dir
-    cursor_curr_dir += (365 // increment)
-
-    new_heading = int(t.heading()) + (365 // increment)
-    t.seth(new_heading)
-    rotate(t, resized_path, new_heading + 60, "icon_cache")
-    t.penup()
-    t.goto(center)
-    t.forward(radius)
-    # t.screen.update()
-    t.screen.ontimer(turn_turtle, 10)
+def update_cursors(increment:int = number_of_cursors):
+  cursor_drawer.clear()
+  for i in range(number_of_cursors):
+    curr_heading = int(cursor_drawer.heading())
+    new_heading = curr_heading + (365 // (increment + 1)) + i * 10
     
-  turn_turtle()
+    cursor_drawer.seth(new_heading)
+    resized_path = abs_resize(cursor_drawer, "assets/cursor.gif", 20, "icon_cache")
+    rotate(cursor_drawer, resized_path, new_heading + 60, "icon_cache")
+    cursor_drawer.penup()
+    cursor_drawer.goto(cookie_coords)
+    cursor_drawer.forward(200)
+    cursor_drawer.stamp()
+    cursor_drawer.seth(curr_heading +  (365 // increment))
+  
+    
+if __name__ == "__main__":
+  abs_resize_cookie(cookie_size)
+  cookie.onclick(handle_cookie_click)
+    
+  for i, building in enumerate(buildings):
+    create_button(building_turtles[i], 300, (i * -120) + 120, building)
+  handle_buildings()
 
-# --- call funcs ---
-abs_resize_cookie(cookie_size)
+  def mainloop(freq: int = 20):
+    update_cps()
+    update_cursors()
+    wn.update()
+    wn.ontimer(mainloop, freq)
+  mainloop()
 
-for i, building in enumerate(buildings):
-  draw_button(building_turtles[i], 300, (i * -120) + 120, building)
-
-handle_buildings()
-update_cps()
-update_cookies(0)
-cookie.onclick(handle_cookie_click)
-
-wn.update()
-
-for i in range(10):
-  rotate_cursor(trtl.Turtle(), 0, 200, 100, cookie_coords)
-
-call_updates(cookie)
-
-wn.listen()
-wn.mainloop()
+  wn.listen()
+  wn.mainloop()
