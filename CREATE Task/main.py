@@ -1,8 +1,6 @@
 import turtle as trtl 
-import random as rand
 from typing import TypedDict
-from functools import partial
-from utils import call_updates, draw_rect, quickmove, abs_resize, clear_folder, rotate
+from utils import *
 
 # --- init vars ---
 cookie_img = "assets/cookie.gif"
@@ -174,16 +172,16 @@ def handle_buildings():
   wn.ontimer(handle_buildings, 100)
 
 def add_cursor():
-  '''Turns a turtle object into a rotating cursor.
-  :params: freq - number of frames per rotation.'''
+  '''Turns a turtle object into a rotating cursor.'''
   global number_of_cursors
   number_of_cursors += 1
 
-def update_cursors(increment:int = number_of_cursors):
+# still laggy, but it's the best we're getting. 
+def update_cursors():
   cursor_drawer.clear()
+  true_heading = cursor_drawer.heading()
   for i in range(number_of_cursors):
-    curr_heading = int(cursor_drawer.heading())
-    new_heading = curr_heading + (365 // (increment + 1)) + i * 10
+    new_heading = true_heading + (i * 5)
     
     cursor_drawer.seth(new_heading)
     resized_path = abs_resize(cursor_drawer, "assets/cursor.gif", 20, "icon_cache")
@@ -192,23 +190,22 @@ def update_cursors(increment:int = number_of_cursors):
     cursor_drawer.goto(cookie_coords)
     cursor_drawer.forward(200)
     cursor_drawer.stamp()
-    cursor_drawer.seth(curr_heading +  (365 // increment))
+  if number_of_cursors:
+    cursor_drawer.seth(true_heading + 1) 
   
-    
-if __name__ == "__main__":
-  abs_resize_cookie(cookie_size)
-  cookie.onclick(handle_cookie_click)
-    
-  for i, building in enumerate(buildings):
-    create_button(building_turtles[i], 300, (i * -120) + 120, building)
-  handle_buildings()
+abs_resize_cookie(cookie_size)
+cookie.onclick(handle_cookie_click)
+  
+for i, building in enumerate(buildings):
+  create_button(building_turtles[i], 300, (i * -120) + 120, building)
+handle_buildings()
 
-  def mainloop(freq: int = 20):
-    update_cps()
-    update_cursors()
-    wn.update()
-    wn.ontimer(mainloop, freq)
-  mainloop()
+def mainloop():
+  update_cps()
+  update_cursors()
+  wn.update()
+  wn.ontimer(mainloop, 100)
+mainloop()
 
-  wn.listen()
-  wn.mainloop()
+wn.listen()
+wn.mainloop()

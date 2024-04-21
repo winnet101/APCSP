@@ -1,7 +1,6 @@
 from turtle import Turtle
 from PIL import Image, ImageOps
 import os
-from functools import partial
 
 def quickmove(t:Turtle, x:int, y:int):
   '''Moves the turtle to a given location without pen.
@@ -95,8 +94,3 @@ def clear_folder(path:str):
   for file in os.listdir(path):
     file_path = os.path.join(path, file)
     os.unlink(file_path)
-
-def call_updates(t: Turtle):
-  t.screen.update()
-  update_loop = partial(call_updates, t)
-  t.screen.ontimer(update_loop)
