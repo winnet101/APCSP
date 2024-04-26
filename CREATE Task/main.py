@@ -12,8 +12,8 @@ cookies = 0
 
 trtl.tracer(False)
 wn = trtl.Screen()
-wn.setup(0.5, 1.0, 630)
-# wn.setup(1.0, 1.0)
+# wn.setup(0.5, 1.0, 630)
+wn.setup(1.0, 1.0)
 wn.addshape(cookie_img)
 
 cookie = trtl.Turtle()
@@ -66,8 +66,8 @@ for building in buildings:
 clear_folder(COOKIE_CACHE_PATH)
 clear_folder(ICON_CACHE_PATH)
 
-number_of_cursors = 0
 cursor_drawer = trtl.Turtle()
+cursor_drawer.hideturtle()
 
 # --- functions ---
 # def draw_mini_cookie():
@@ -122,7 +122,7 @@ def update_cps():
   for v in buildings.values():
     curr_cps += v["effect"] * float(v["owned"])
     curr_cps = round(curr_cps, 1)
-  cps_writer.write(f"Cookies per second: {curr_cps}", font=("Verdana", 10, "normal"), align="center")
+  cps_writer.write(f"Cookies per second: {curr_cps}", font=("Verdana", 10, "normal"), align="center")  
 
 def create_button(t:trtl.Turtle, x:int, y:int, building:str): 
   t.color("#87481e") 
@@ -154,8 +154,6 @@ def create_button(t:trtl.Turtle, x:int, y:int, building:str):
         buildings[building]["owned"] += 1
         update_cps()
         create_button(t, x, y, building)
-        if building == "cursor":
-          add_cursor()
 
   wn.onscreenclick(handle_button_click, add=True)
 
@@ -171,16 +169,10 @@ def handle_buildings():
     handle_cookies(add)
   wn.ontimer(handle_buildings, 100)
 
-def add_cursor():
-  '''Turns a turtle object into a rotating cursor.'''
-  global number_of_cursors
-  number_of_cursors += 1
-
-# still laggy, but it's the best we're getting. 
 def update_cursors():
   cursor_drawer.clear()
   true_heading = cursor_drawer.heading()
-  for i in range(number_of_cursors):
+  for i in range(buildings["cursor"]["owned"]):
     new_heading = true_heading + (i * 5)
     
     cursor_drawer.seth(new_heading)
@@ -190,9 +182,9 @@ def update_cursors():
     cursor_drawer.goto(cookie_coords)
     cursor_drawer.forward(200)
     cursor_drawer.stamp()
-  if number_of_cursors:
+  if buildings["cursor"]["owned"]:
     cursor_drawer.seth(true_heading + 1) 
-  
+
 abs_resize_cookie(cookie_size)
 cookie.onclick(handle_cookie_click)
   
