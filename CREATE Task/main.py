@@ -90,6 +90,8 @@ def handle_cookie_click(x: float, y: float):
   handle_cookies(1)
   bounce_cookie(cookie_size)
 
+cookie.onclick(handle_cookie_click)
+
 def bounce_cookie(init_size: int):
   global is_animating
   if is_animating:
@@ -100,10 +102,12 @@ def bounce_cookie(init_size: int):
     for i in range(5):
       abs_resize_cookie(init_size + (i * 10))
       wn.update()
+    new_size = init_size + 50
 
     for i in range(5):
-      abs_resize_cookie((init_size + (5 * 10)) + (-i * 10))
+      abs_resize_cookie(new_size - (i * 10))
       wn.update()
+
     abs_resize_cookie(init_size)
     wn.update()
   is_animating = False
@@ -186,7 +190,6 @@ def update_cursors():
     cursor_drawer.seth(true_heading + 1) 
 
 abs_resize_cookie(cookie_size)
-cookie.onclick(handle_cookie_click)
   
 for i, building in enumerate(buildings):
   create_button(building_turtles[i], 300, (i * -120) + 120, building)
